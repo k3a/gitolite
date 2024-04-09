@@ -73,7 +73,10 @@ sub access {
     trace( 2, $repo, $user, $aa, $ref );
     _die "invalid user '$user'" if not( $user and $user =~ $USERNAME_PATT );
     sanity($repo);
-    return "$aa any $repo $user DENIED by fallthru" unless update_hook_present($repo);
+    if ( not update_hook_present($repo) ) {
+        trace( 1, "repo $repo does not have a valid update hook, run 'gitolite setup -ho' if you have moved the user's home directory" );
+        return "$aa any $repo $user DENIED by invalid setup";
+    }
 
     my @rules;
     my $deny_rules;
